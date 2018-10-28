@@ -1,0 +1,77 @@
+- hosts: localhost
+  connection: local
+  vars: 
+    image: "2018-10-09-raspbian-stretch-lite.img"
+  tasks:
+    - name: See partitioning
+      raw: LANG=POSIX fdisk -l {{ image }}
+      register: output1    
+
+    - name: Prepare Sector Size
+      set_fact: 
+        sector_size: '{{ output1.stdout | regex_findall ("Units: sectors of 1 \* (?P<size>[0-9]{1,5})") }}'
+
+    - name: Prepare Patterns for search partitions
+      set_fact:
+        pattern1: "{{image}}1\\s*(?P<start>[0-9]{1,15})"
+        pattern2: "{{image}}2\\s*(?P<start>[0-9]{1,15})"
+        pattern3: "{{image}}1\\s*[0-9]{1,15}\\s*[0-9]{1,15}\\s*(?P<size>[0-9]{1,15})"
+        pattern4: "{{image}}2\\s*[0-9]{1,15}\\s*[0-9]{1,15}\\s*(?P<size>[0-9]{1,15})"
+
+    - name: Prepare Starts Partitions
+      set_fact:
+        start_first: '{{ output1.stdout | regex_findall (pattern1) }}'   
+        start_second: '{{ output1.stdout | regex_findall (pattern2) }}'
+        size_first: '{{ output1.stdout | regex_findall (pattern3) }}'
+        size_second: '{{ output1.stdout | regex_findall (pattern4) }}'
+
+    - name: mount Partition 1
+      become: true
+      mount:
+        path: ./part1
+        src: "{{image}}"
+        fstype: vfat
+        state: mounted
+        opts: offset={{start_first[0]|int * sector_size[0]|int}},sizelimit={{size_first[0]|int * sector_size[0]|int}}
+
+    - name: mount Partition 2
+      become: true
+      mount:
+        path: ./part2
+        src: "{{image}}"
+        fstype: ext4
+        state: mounted
+        opts: offset={{start_second[0]|int * sector_size[0]|int}},sizelimit={{size_second[0]|int * sector_size[0]|int}}
+
+    - name: Copying wpa_supplicant
+      become: true
+      copy:
+        src: wpa_supplicant.conf
+        dest: ./part2/etc/wpa_supplicant
+        remote_src: yes
+        mode: 0600
+
+    - name: Allowing ssh
+      become: true
+      copy:
+        content: ""
+        dest: ./part1/ssh
+        force: no
+
+    - name: unmount Partition 1
+      become: true
+      mount:
+        path: ./part1
+        src: "{{image}}"
+        fstype: vfat
+        state: absent
+        opts: offset={{start_first[0]|int * sector_size[0]|int}},sizelimit={{size_first[0]|int * sector_size[0]|int}}
+
+    - name: unmount Partition 2
+      become: true
+      mount:
+        path: ./part2
+        src: "{{image}}"
+        fstype: ext4
+        state: absent
+        opts: offset={{start_second[0]|int * sector_size[0]|int}},sizelimit={{size_second[0]|int * sector_size[0]|int}}
