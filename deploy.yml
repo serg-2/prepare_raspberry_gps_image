@@ -31,7 +31,13 @@
         name: gpsd
         sleep: 5
         state: restarted
+
+    - name: Check GPS
+      raw: 'until cat /dev/ttyACM0 | grep -m 1 "GNGLL"; do : ; done'
+      register: output2
     
+    - name: print output GPS
+      debug: msg="{{ output2.stdout_lines }}"
 
 #    - name: change default password
     
