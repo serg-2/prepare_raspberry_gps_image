@@ -1,0 +1,5 @@
+---
+#
+# ADd self_check.sh
+# */15 * * * * /{PATH}/self_check.sh
+# Change default password

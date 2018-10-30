@@ -1,69 +1,13 @@
 - hosts: raspbian
   vars_files: 
     - pass.yaml
+  vars:
+    needreboot: false
   become: yes
-  tasks:
-#    - name: Update cache of apt
-#      apt:
-#        update_cache: yes
-#        cache_valid_time: 3600
-
-#    - name: Upgrade packages
-#      apt:
-#        name: "*"
-#        state: latest
-
-    - name: installing packages
-      apt: 
-        name: 
-          - gpsd 
-          - gpsd-clients
-          - python-gps 
-     
-    - name: Copying gpsd
-      copy:
-        src: gpsd
-        dest: /etc/default
-        mode: 0644
-
-    - name: Restart gpsd
-      service:
-        name: gpsd
-        sleep: 5
-        state: restarted
-
-    - name: Check GPS
-      raw: 'until cat /dev/ttyACM0 | grep -m 1 "GNGLL"; do : ; done'
-      register: output2
-    
-    - name: print output GPS
-      debug: msg="{{ output2.stdout_lines }}"
-
-#    - name: change default password
-# edit ~/.vimrc
-
-# download latest go:  https://golang.org/dl/
-# wget https://dl.google.com/go/go1.11.1.linux-armv6l.tar.gz
-# copy file
-# sudo tar -C /usr/local -xvf go1.11.1.linux-armv6l.tar.gz
-# ADD в ~/.bashrc 
-# export GOPATH=$HOME/go
-# export PATH=/usr/local/go/bin:$PATH:$GOPATH/bin
-
-#LORA
-# apt install git
-# git clone git://git.drogon.net/wiringPi
-# cd wiringPi
-# ./build
-# OR
-# sudo apt-get install wiringpi
-# add to /boot/config.txt
-# dtparam=spi=on
-# dtoverlay=pi3-disable-bt-overlay
-# core_freq=250
-# enable_uart=1
-# force_turbo=1
-#
-# ADd self_check.sh
-# */15 * * * * /{PATH}/self_check.sh
+  roles:
+#    - initial
+    - develop
+#    - dragino
+#    - gps
+#    - finishing
 

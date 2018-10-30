@@ -2,5 +2,6 @@ wpa_supplicant.conf
 *.img
 *.swp
 *.retry
+*.gz
 pass.yaml
 

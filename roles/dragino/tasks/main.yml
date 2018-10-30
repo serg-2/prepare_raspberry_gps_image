@@ -1,0 +1,23 @@
+---
+- name: Install wiringpi
+  apt:
+    name:
+      - wiringpi
+
+- name: configuring /boot/config.txt
+  lineinfile:
+    path: /boot/config.txt
+    line: "{{ item }}"
+    state: present
+  with_items:
+    - dtparam=spi=on
+    - dtoverlay=pi3-disable-bt-overlay
+    - core_freq=250
+    - enable_uart=1
+    - force_turbo=1
+  register: configboot
+
+- name: Setting fact for reboot at the end
+  set_fact: needreboot=true
+  when: configboot.changed
+

@@ -75,3 +75,10 @@
         fstype: ext4
         state: absent
         opts: offset={{start_second[0]|int * sector_size[0]|int}},sizelimit={{size_second[0]|int * sector_size[0]|int}}
+
+# Obtain last version name at https://golang.org/dl/
+    - name: Download Last Go
+      get_url:
+        dest: ./go1.11.1.linux-armv6l.tar.gz
+        url: https://dl.google.com/go/go1.11.1.linux-armv6l.tar.gz
+

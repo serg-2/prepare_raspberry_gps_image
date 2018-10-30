@@ -1,0 +1,24 @@
+---
+- name: Installing git
+  apt:
+    name: 
+      - git
+
+- name: Adding GO environment to .bashrc
+  lineinfile:
+    path: /home/pi/.bashrc
+    state: present
+    line: "{{ item }}"
+    create: yes
+  with_items:
+    - export GOPATH=$HOME/go
+    - export PATH=/usr/local/go/bin:$PATH:$GOPATH/bin
+
+- name: Install go from source 
+  unarchive:
+    dest: /usr/local
+    src: go1.11.1.linux-armv6l.tar.gz
+
+
+
+
