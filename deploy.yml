@@ -57,3 +57,11 @@
 # ./build
 # OR
 # sudo apt-get install wiringpi
+# add to /boot/config.txt
+# dtparam=spi=on
+# dtoverlay=pi3-disable-bt-overlay
+# core_freq=250
+# enable_uart=1
+# force_turbo=1
+
+
