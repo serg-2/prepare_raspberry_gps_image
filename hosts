@@ -1,4 +1,4 @@
 [main]
-localhost 
+localhost ansible_connection=local
 [raspbian]
 lora1
