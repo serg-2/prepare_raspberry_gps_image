@@ -1,0 +1,15 @@
+country=GB
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+
+network={
+	ssid="ssid1"
+	psk="12345678"
+	priority=5
+}
+network={
+	ssid="ssid2"
+	psk="87654321"
+	priority=2
+}
+
