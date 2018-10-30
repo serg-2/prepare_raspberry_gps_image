@@ -63,5 +63,7 @@
 # core_freq=250
 # enable_uart=1
 # force_turbo=1
-
+#
+# ADd self_check.sh
+# */15 * * * * /{PATH}/self_check.sh
 
