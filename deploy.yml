@@ -55,3 +55,5 @@
 # git clone git://git.drogon.net/wiringPi
 # cd wiringPi
 # ./build
+# OR
+# sudo apt-get install wiringpi
