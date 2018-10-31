@@ -6,7 +6,7 @@
       - gpsd-clients
       - python-gps 
      
-- name: Copying gpsd
+- name: Copying gpsd for USB stick
   copy:
     src: gpsd
     dest: /etc/default

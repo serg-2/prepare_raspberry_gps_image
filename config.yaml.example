@@ -1,0 +1,4 @@
+---
+- self_check_host: 8.8.8.8
+- self_check_path: /home/user/test
+- user_pass_hash: "$6$p8asdADY.0"

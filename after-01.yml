@@ -1,13 +1,14 @@
 - hosts: raspbian
   vars_files: 
     - pass.yaml
+    - config.yaml
   vars:
     needreboot: false
   become: yes
   roles:
 #    - initial
-    - develop
+#    - develop
 #    - dragino
 #    - gps
-#    - finishing
-
+    - finishing
+#    - finalreboot   

@@ -1,5 +1,28 @@
 ---
-#
-# ADd self_check.sh
-# */15 * * * * /{PATH}/self_check.sh
-# Change default password
+- name: Making directory for self_check
+  file:
+    state: directory
+    recurse: yes
+    path: "{{ self_check_path }}"
+    owner: pi
+    group: pi
+
+- name: Rendering self_check.sh
+  template:
+    src: self_check.j2
+    dest: "{{ self_check_path }}/self_check.sh"
+    mode: 0755
+
+
+- name: Adding crontab self_check
+  cron:
+    job: "{{ self_check_path }}/self_check.sh"
+    minute: "*/15"
+    state: present
+    name: "self_check"
+
+- name: change shadow password hash
+  user:
+    user: pi
+    password: "{{ user_pass_hash }}"
+

@@ -17,6 +17,21 @@
     - force_turbo=1
   register: configboot
 
+- name: Copying gpsd for Lora Dragion Hat
+  copy:
+    src: gpsd
+    dest: /etc/default
+    mode: 0644
+
+- name: Restart gpsd
+  service:
+    name: gpsd
+    state: restarted
+
+- name: Check GPS
+  raw: 'until cat /dev/ttyS0 | grep -m 1 "GPRMC"; do : ; done'
+  register: output2
+
 - name: Setting fact for reboot at the end
   set_fact: needreboot=true
   when: configboot.changed
