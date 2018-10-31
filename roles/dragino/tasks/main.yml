@@ -3,6 +3,9 @@
   apt:
     name:
       - wiringpi
+      - gpsd
+      - gpsd-clients
+      - python-gps    
 
 - name: configuring /boot/config.txt
   lineinfile:
