@@ -1,5 +1,7 @@
 - hosts: localhost
   connection: local
+#Get Last Raspbian stretch lite image
+#from https://downloads.raspberrypi.org/raspbian_lite_latest
   vars: 
     image: "2018-10-09-raspbian-stretch-lite.img"
   tasks:
@@ -79,6 +81,6 @@
 # Obtain last version name at https://golang.org/dl/
     - name: Download Last Go
       get_url:
-        dest: ./go1.11.1.linux-armv6l.tar.gz
+        dest: ./roles/develop/files/go1.11.1.linux-armv6l.tar.gz
         url: https://dl.google.com/go/go1.11.1.linux-armv6l.tar.gz
 
