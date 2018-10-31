@@ -9,7 +9,7 @@
     name: "*"
     state: latest
 
-- name: Add vim nocp
+- name: Add vim nocp for pi user
   lineinfile:
     path: /home/pi/.vimrc
     owner: pi
@@ -18,4 +18,10 @@
     mode: 0644
     state: present
     line: "set nocompatible"
+
+- name: create symbolic link for root for .vimrc
+  file:
+    src: "/home/pi/.vimrc"
+    dest: "/root/.vimrc"
+    state: link
 
