@@ -1,13 +1,12 @@
 - hosts: localhost
   connection: local
-#Get Last Raspbian stretch lite image
-#from https://downloads.raspberrypi.org/raspbian_lite_latest
   vars: 
     image: "2018-10-09-raspbian-stretch-lite.img"
   tasks:
     - name: See partitioning
       raw: LANG=POSIX fdisk -l {{ image }}
       register: output1    
+      changed_when: false
 
     - name: Prepare Sector Size
       set_fact: 
@@ -42,8 +41,44 @@
         path: ./part2
         src: "{{image}}"
         fstype: ext4
-        state: mounted
+        state: mounted 
         opts: offset={{start_second[0]|int * sector_size[0]|int}},sizelimit={{size_second[0]|int * sector_size[0]|int}}
+
+    - name: Copying qemu static
+      become: true
+      copy:
+        src: /usr/bin/qemu-arm-static
+        dest: ./part2/usr/bin/qemu-arm-static
+        mode: 0755
+        owner: root
+        group: root
+
+    - name: Mount dev for chroot
+      become: true
+      mount:
+        path: ./part2/dev
+        src: /dev
+        state: mounted
+        fstype: devtmpfs
+        opts: rbind
+
+    - name: Mount proc for chroot
+      become: true
+      mount:
+        path: ./part2/proc
+        src: none
+        state: mounted
+        fstype: proc
+
+    - name: Mount sys for chroot
+      become: true
+      mount:
+        path: ./part2/sys
+        src: /sys
+        state: mounted
+        fstype: sysfs
+
+#Copying to local FS
 
     - name: Copying wpa_supplicant
       become: true
@@ -59,6 +94,38 @@
         content: ""
         dest: ./part1/ssh
         force: no
+
+#Copying to chroot FS
+
+    - name: Update cache of apt
+      raw: apt-get update
+      delegate_to: ./part2
+
+    - name: Upgrade packages
+      raw: apt-get -y upgrade
+      delegate_to: ./part2
+
+#Unmounting
+
+    - name: Unmount sys for chroot
+      become: true
+      mount:
+        path: ./part2/sys
+        src: /sys
+        state: absent
+        fstype: sysfs
+
+    - name: Unount proc for chroot
+      become: true
+      mount:
+        path: ./part2/proc
+        src: none
+        state: absent
+        fstype: proc
+
+    - name: Unmount dev for chroot
+      become: true
+      raw: umount -l ./part2/dev  
 
     - name: unmount Partition 1
       become: true
