@@ -1,0 +1,22 @@
+---
+- name: Download Last Raspbian Stretch
+  get_url:
+    dest: ./raspbian-stretch-lite.img.zip
+    url: https://downloads.raspberrypi.org/raspbian_lite_latest
+
+- name: Unzipping Image
+  unarchive:
+    dest: ./
+    src: raspbian-stretch-lite.img.zip
+    list_files: yes
+    remote_src: yes
+  register: output1
+
+- name: Renaming image
+  raw: mv "{{ output1.files[0] }}" raspbian-stretch-lite.img
+
+- name: Deleting archive
+  file:
+    state: absent
+    path: raspbian-stretch-lite.img.zip
+

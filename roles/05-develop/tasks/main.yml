@@ -3,6 +3,7 @@
   apt:
     name: 
       - git
+  delegate_to: ./part2
 
 - name: Adding GO environment to .bashrc
   lineinfile:
@@ -13,10 +14,18 @@
   with_items:
     - export GOPATH=$HOME/go
     - export PATH=/usr/local/go/bin:$PATH:$GOPATH/bin
+  delegate_to: ./part2
+
+# Obtain last version name at https://golang.org/dl/
+- name: Download Last Go
+  get_url:
+    dest: ./roles/05-develop/files/go1.11.1.linux-armv6l.tar.gz
+    url: https://dl.google.com/go/go1.11.1.linux-armv6l.tar.gz
 
 - name: Install go from source 
   unarchive:
     dest: /usr/local
     src: go1.11.1.linux-armv6l.tar.gz
+  delegate_to: ./part2
 
 

@@ -1,0 +1,16 @@
+---
+- name: Copying wpa_supplicant
+  become: true
+  copy:
+    src: wpa_supplicant.conf
+    dest: ./part2/etc/wpa_supplicant
+    remote_src: yes
+    mode: 0600
+
+- name: Allowing ssh
+  become: true
+  copy:
+    content: ""
+    dest: ./part1/ssh
+    force: no
+

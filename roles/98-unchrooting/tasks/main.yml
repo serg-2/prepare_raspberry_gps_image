@@ -1,0 +1,39 @@
+---
+#- name: Unmount dev for chroot
+#  become: true
+#  mount:
+#    path: ./part2/dev
+#    src: /dev
+#    state: absent
+#    fstype: devtmpfs
+#    fstab: ./temp_fstab
+#  ignore_errors: yes
+
+- name: Unmount dev for chroot
+  become: true
+  raw: umount ./part2/dev
+
+- name: Deleting entry for /dev
+  lineinfile:
+    state: absent
+    path: ./temp_fstab
+    regexp: "^/dev \\./part2/dev devtmpfs"
+
+- name: Unmount proc for chroot
+  become: true
+  mount:
+    path: ./part2/proc
+    src: none
+    state: absent
+    fstype: proc
+    fstab: ./temp_fstab
+
+- name: Unmount sys for chroot
+  become: true
+  mount:
+    path: ./part2/sys
+    src: /sys
+    state: absent
+    fstype: sysfs
+    fstab: ./temp_fstab
+

@@ -1,153 +1,21 @@
 - hosts: localhost
   connection: local
   vars: 
-    image: "2018-10-09-raspbian-stretch-lite.img"
-  tasks:
-    - name: See partitioning
-      raw: LANG=POSIX fdisk -l {{ image }}
-      register: output1    
-      changed_when: false
+    image: "raspbian-stretch-lite.img"
+  roles:
+    - 00-download-raspbian
+    - 01-mounting
+    - 02-chrooting
+    - 03-initial-prepare
+    - 04-basic-configs
 
-    - name: Prepare Sector Size
-      set_fact: 
-        sector_size: '{{ output1.stdout | regex_findall ("Units: sectors of 1 \* (?P<size>[0-9]{1,5})") }}'
+    - 05-develop
 
-    - name: Prepare Patterns for search partitions
-      set_fact:
-        pattern1: "{{image}}1\\s*(?P<start>[0-9]{1,15})"
-        pattern2: "{{image}}2\\s*(?P<start>[0-9]{1,15})"
-        pattern3: "{{image}}1\\s*[0-9]{1,15}\\s*[0-9]{1,15}\\s*(?P<size>[0-9]{1,15})"
-        pattern4: "{{image}}2\\s*[0-9]{1,15}\\s*[0-9]{1,15}\\s*(?P<size>[0-9]{1,15})"
+    - 06-usb-gps
+    - 07-dragino
 
-    - name: Prepare Starts Partitions
-      set_fact:
-        start_first: '{{ output1.stdout | regex_findall (pattern1) }}'   
-        start_second: '{{ output1.stdout | regex_findall (pattern2) }}'
-        size_first: '{{ output1.stdout | regex_findall (pattern3) }}'
-        size_second: '{{ output1.stdout | regex_findall (pattern4) }}'
+    - 98-unchrooting 
+    - 99-unmounting
 
-    - name: mount Partition 1
-      become: true
-      mount:
-        path: ./part1
-        src: "{{image}}"
-        fstype: vfat
-        state: mounted
-        opts: offset={{start_first[0]|int * sector_size[0]|int}},sizelimit={{size_first[0]|int * sector_size[0]|int}}
 
-    - name: mount Partition 2
-      become: true
-      mount:
-        path: ./part2
-        src: "{{image}}"
-        fstype: ext4
-        state: mounted 
-        opts: offset={{start_second[0]|int * sector_size[0]|int}},sizelimit={{size_second[0]|int * sector_size[0]|int}}
-
-    - name: Copying qemu static
-      become: true
-      copy:
-        src: /usr/bin/qemu-arm-static
-        dest: ./part2/usr/bin/qemu-arm-static
-        mode: 0755
-        owner: root
-        group: root
-
-    - name: Mount dev for chroot
-      become: true
-      mount:
-        path: ./part2/dev
-        src: /dev
-        state: mounted
-        fstype: devtmpfs
-        opts: rbind
-
-    - name: Mount proc for chroot
-      become: true
-      mount:
-        path: ./part2/proc
-        src: none
-        state: mounted
-        fstype: proc
-
-    - name: Mount sys for chroot
-      become: true
-      mount:
-        path: ./part2/sys
-        src: /sys
-        state: mounted
-        fstype: sysfs
-
-#Copying to local FS
-
-    - name: Copying wpa_supplicant
-      become: true
-      copy:
-        src: wpa_supplicant.conf
-        dest: ./part2/etc/wpa_supplicant
-        remote_src: yes
-        mode: 0600
-
-    - name: Allowing ssh
-      become: true
-      copy:
-        content: ""
-        dest: ./part1/ssh
-        force: no
-
-#Copying to chroot FS
-
-    - name: Update cache of apt
-      raw: apt-get update
-      delegate_to: ./part2
-
-    - name: Upgrade packages
-      raw: apt-get -y upgrade
-      delegate_to: ./part2
-
-#Unmounting
-
-    - name: Unmount sys for chroot
-      become: true
-      mount:
-        path: ./part2/sys
-        src: /sys
-        state: absent
-        fstype: sysfs
-
-    - name: Unount proc for chroot
-      become: true
-      mount:
-        path: ./part2/proc
-        src: none
-        state: absent
-        fstype: proc
-
-    - name: Unmount dev for chroot
-      become: true
-      raw: umount -l ./part2/dev  
-
-    - name: unmount Partition 1
-      become: true
-      mount:
-        path: ./part1
-        src: "{{image}}"
-        fstype: vfat
-        state: absent
-        opts: offset={{start_first[0]|int * sector_size[0]|int}},sizelimit={{size_first[0]|int * sector_size[0]|int}}
-
-    - name: unmount Partition 2
-      become: true
-      mount:
-        path: ./part2
-        src: "{{image}}"
-        fstype: ext4
-        state: absent
-        opts: offset={{start_second[0]|int * sector_size[0]|int}},sizelimit={{size_second[0]|int * sector_size[0]|int}}
-
-# Obtain last version name at https://golang.org/dl/
-    - name: Download Last Go
-      get_url:
-        dest: ./roles/develop/files/go1.11.1.linux-armv6l.tar.gz
-        url: https://dl.google.com/go/go1.11.1.linux-armv6l.tar.gz
 

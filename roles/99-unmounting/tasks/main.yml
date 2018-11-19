@@ -1,0 +1,24 @@
+---
+- name: unmount Partition 1
+  become: true
+  mount:
+    path: ./part1
+    src: "{{image}}"
+    fstype: vfat
+    state: absent
+    fstab: ./temp_fstab
+
+- name: unmount Partition 2
+  become: true
+  mount:
+    path: ./part2
+    src: "{{image}}"
+    fstype: ext4
+    state: absent
+    fstab: ./temp_fstab
+
+- name: Deleting temp_fstab
+  file:
+    path: ./temp_fstab
+    state: absent
+

@@ -1,0 +1,31 @@
+---
+- name: Mount dev for chroot
+  become: true
+  mount:
+    path: ./part2/dev
+    src: /dev
+    state: mounted
+    fstype: devtmpfs
+    opts: noauto
+    fstab: ./temp_fstab
+
+- name: Mount proc for chroot
+  become: true
+  mount:
+    path: ./part2/proc
+    src: none
+    state: mounted
+    fstype: proc
+    opts: noauto
+    fstab: ./temp_fstab
+
+- name: Mount sys for chroot
+  become: true
+  mount:
+    path: ./part2/sys
+    src: /sys
+    state: mounted
+    fstype: sysfs
+    opts: noauto
+    fstab: ./temp_fstab
+

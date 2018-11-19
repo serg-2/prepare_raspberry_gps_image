@@ -5,4 +5,6 @@ wpa_supplicant.conf
 *.gz
 pass.yaml
 config.yaml
+temp_fstab
+
 

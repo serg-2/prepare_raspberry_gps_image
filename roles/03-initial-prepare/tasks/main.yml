@@ -1,13 +1,20 @@
 ---
+- name: Copying qemu static
+  become: true
+  copy:
+    src: /usr/bin/qemu-arm-static
+    dest: ./part2/usr/bin/qemu-arm-static
+    mode: 0755
+    owner: root
+    group: root
+
 - name: Update cache of apt
-  apt:
-    update_cache: yes
-    cache_valid_time: 3600
+  raw: apt-get update
+  delegate_to: ./part2
 
 - name: Upgrade packages
-  apt:
-    name: "*"
-    state: latest
+  raw: apt-get -y upgrade
+  delegate_to: ./part2
 
 - name: Add vim nocp for pi user
   lineinfile:
@@ -18,10 +25,12 @@
     mode: 0644
     state: present
     line: "set nocompatible"
+  delegate_to: ./part2
 
 - name: create symbolic link for root for .vimrc
   file:
     src: "/home/pi/.vimrc"
     dest: "/root/.vimrc"
     state: link
+  delegate_to: ./part2
 

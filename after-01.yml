@@ -6,8 +6,6 @@
     needreboot: false
   become: yes
   roles:
-    - initial
-    - develop
     - dragino
 #    - gps
     - finishing

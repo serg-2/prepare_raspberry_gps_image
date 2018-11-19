@@ -6,10 +6,11 @@
       - gpsd
       - gpsd-clients
       - python-gps    
+  delegate_to: ./part2
 
 - name: configuring /boot/config.txt
   lineinfile:
-    path: /boot/config.txt
+    path: ./part1/config.txt
     line: "{{ item }}"
     state: present
   with_items:
@@ -18,24 +19,20 @@
     - core_freq=250
     - enable_uart=1
     - force_turbo=1
-  register: configboot
 
-- name: Copying gpsd for Lora Dragion Hat
+- name: Copying gpsd for Lora Dragino Hat
   copy:
     src: gpsd
     dest: /etc/default
     mode: 0644
+  delegate_to: ./part2
 
-- name: Restart gpsd
-  service:
-    name: gpsd
-    state: restarted
+#- name: Restart gpsd
+#  service:
+#    name: gpsd
+#    state: restarted
 
-- name: Check GPS
-  raw: 'until cat /dev/ttyS0 | grep -m 1 "GPRMC"; do : ; done'
-  register: output2
-
-- name: Setting fact for reboot at the end
-  set_fact: needreboot=true
-  when: configboot.changed
+#- name: Check GPS
+#  raw: 'until cat /dev/ttyS0 | grep -m 1 "GPRMC"; do : ; done'
+#  register: output2
 
