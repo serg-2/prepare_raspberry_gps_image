@@ -1,0 +1,47 @@
+---
+- name: installing packages
+  apt: 
+    name: 
+      - dnsmasq 
+      - hostapd
+  delegate_to: ./part2
+
+- name: Configuring static server IP
+  lineinfile:
+    path: /etc/dhcpcd.conf
+    state: present
+    line: "{{ item }}"
+  with_items:
+    - "interface wlan0"
+    - "  static ip_address={{ ap_static_server_ip }}"
+    - "  nohook wpa_supplicant"
+  delegate_to: ./part2
+
+- name: Configuring dhcp daemon (dnsmasq)
+  copy:
+    backup: yes
+    src: dnsmasq.conf
+    dest: /etc/dnsmasq.conf
+    owner: root
+    group: root
+    mode: 0644
+  delegate_to: ./part2
+
+- name: Configuring hostap daemon
+  copy:
+    backup: yes
+    src: hostapd.conf
+    dest: /etc/hostapd/hostapd.conf
+    owner: root
+    group: root
+    mode: 0644
+  delegate_to: ./part2
+
+- name: Configuring default config for hostapd
+  lineinfile:
+    path: /etc/default/hostapd
+    state: present
+    line: 'DAEMON_CONF="/etc/hostapd/hostapd.conf"'
+    create: yes
+  delegate_to: ./part2
+

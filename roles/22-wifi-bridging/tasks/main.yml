@@ -1,0 +1,49 @@
+---
+- name: installing packages
+  apt: 
+    name: 
+      - bridge-utils
+  delegate_to: ./part2
+
+
+- name: Denying dhcp for bridge interfaces
+  lineinfile:
+    path: /etc/dhcpcd.conf
+    state: present
+    regexp: '^denyinterfaces {{ item }}'
+    insertbefore: '^interface'
+    line: "denyinterfaces {{ item }}"
+  with_items:
+    - wlan0
+    - eth0
+  delegate_to: ./part2
+
+- name: Adding bridge to boot
+  lineinfile:
+    path: /etc/network/interfaces
+    state: present
+    regexp: '^{{ item }}'
+    line: "{{ item }}"
+  with_items:
+    - "# Bridge setup"
+    - auto br0
+    - iface br0 inet manual
+    - bridge_ports eth0 wlan0
+  delegate_to: ./part2
+
+- name: Adding bridge to hostapd
+  lineinfile:
+    path: /etc/hostapd/hostapd.conf
+    state: present
+    insertafter: '^interface=wlan0'
+    line: "bridge=br0"
+  delegate_to: ./part2
+
+- name: Commenting driver for hostapd
+  lineinfile:
+    path: /etc/hostapd/hostapd.conf
+    state: present
+    regexp: 'driver=nl80211'
+    line: "#driver=nl80211"
+  delegate_to: ./part2
+

@@ -2,6 +2,7 @@
   connection: local
   vars: 
     image: "raspbian-stretch-lite.img"
+    ap_static_server_ip: "1.1.1.1/24"
   roles:
     - 00-download-raspbian
     - 01-mounting
@@ -9,9 +10,13 @@
     - 03-initial-prepare
     - 04-basic-configs
 
-    - 05-develop
-    - 06-usb-gps
-    - 07-dragino
+    - 10-develop
+    - 11-usb-gps
+#    - 12-dragino
+      
+    - 21-wifi-ap
+    - 22-wifi-routing
+#    - 22-wifi-bridging
 
     - 97-final-init
     - 98-unchrooting 

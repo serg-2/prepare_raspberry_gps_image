@@ -1,0 +1,21 @@
+interface=wlan0
+driver=nl80211
+ssid=NameOfNetwork
+#    a = IEEE 802.11a (5 GHz)
+#    b = IEEE 802.11b (2.4 GHz)
+#    g = IEEE 802.11g (2.4 GHz)
+#    ad = IEEE 802.11ad (60 GHz)
+hw_mode=g
+#Channel 7
+channel=7
+wmm_enabled=0
+macaddr_acl=0
+auth_algs=1
+ignore_broadcast_ssid=0
+wpa=2
+#Without quotes
+wpa_passphrase=AardvarkBadgerHedgehog
+wpa_key_mgmt=WPA-PSK
+wpa_pairwise=TKIP
+rsn_pairwise=CCMP
+

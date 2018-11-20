@@ -1,4 +1,6 @@
 wpa_supplicant.conf
+dnsmasq.conf
+hostapd.conf
 *.img
 *.swp
 *.retry
