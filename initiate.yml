@@ -1,0 +1,21 @@
+- hosts: localhost
+  connection: local
+  vars: 
+    image: "raspbian-stretch-lite.img"
+  roles:
+#    - 00-download-raspbian
+    - 01-mounting
+    - 02-chrooting
+#    - 03-initial-prepare
+#    - 04-basic-configs
+
+#    - 05-develop
+#    - 06-usb-gps
+#    - 07-dragino
+
+    - 97-final-init
+#    - 98-unchrooting 
+#    - 99-unmounting
+
+
+

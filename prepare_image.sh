@@ -1,4 +1,4 @@
 #!/bin/bash
-ansible-playbook before-01.yml
+ansible-playbook initiate.yml
 rm *.retry 2> /dev/null
 

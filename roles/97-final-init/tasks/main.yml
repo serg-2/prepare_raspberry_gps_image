@@ -6,13 +6,14 @@
     path: "{{ self_check_path }}"
     owner: pi
     group: pi
+  delegate_to: ./part2
 
 - name: Rendering self_check.sh
   template:
     src: self_check.j2
     dest: "{{ self_check_path }}/self_check.sh"
     mode: 0755
-
+  delegate_to: ./part2
 
 - name: Adding crontab self_check
   cron:
@@ -20,9 +21,11 @@
     minute: "*/15"
     state: present
     name: "self_check"
+  delegate_to: ./part2  
 
 - name: change shadow password hash
   user:
     user: pi
     password: "{{ user_pass_hash }}"
+  delegate_to: ./part2
 
