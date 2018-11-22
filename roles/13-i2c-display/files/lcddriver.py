@@ -83,6 +83,13 @@ class lcd:
       self.lcd_write_four_bits(mode | (cmd & 0xF0))
       self.lcd_write_four_bits(mode | ((cmd << 4) & 0xF0))
 
+
+# write a character to lcd (or character rom) 0x09: backlight | RS=DR<
+# works!
+   def lcd_write_char(self, charvalue, mode=1):
+      self.lcd_write_four_bits(mode | (charvalue & 0xF0))
+      self.lcd_write_four_bits(mode | ((charvalue << 4) & 0xF0))
+
    # put string function
    def lcd_display_string(self, string, line):
       if line == 1:
@@ -101,4 +108,34 @@ class lcd:
    def lcd_clear(self):
       self.lcd_write(LCD_CLEARDISPLAY)
       self.lcd_write(LCD_RETURNHOME)
+
+  # define backlight on/off (lcd.backlight(1); off= lcd.backlight(0)
+   def backlight(self, state): # for state, 1 = on, 0 = off
+      if state == 1:
+         self.lcd_device.write_cmd(LCD_BACKLIGHT)
+      elif state == 0:
+         self.lcd_device.write_cmd(LCD_NOBACKLIGHT)
+
+   # add custom characters (0 - 7)
+   def lcd_load_custom_chars(self, fontdata):
+      self.lcd_write(0x40);
+      for char in fontdata:
+         for line in char:
+            self.lcd_write_char(line)         
+         
+   # define precise positioning (addition from the forum)
+   def lcd_display_string_pos(self, string, line, pos):
+       if line == 1:
+          pos_new = pos
+       elif line == 2:
+          pos_new = 0x40 + pos
+       elif line == 3:
+          pos_new = 0x14 + pos
+       elif line == 4:
+          pos_new = 0x54 + pos
+
+       self.lcd_write(0x80 + pos_new)
+
+       for char in string:
+          self.lcd_write(ord(char), Rs)
 
