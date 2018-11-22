@@ -1,0 +1,48 @@
+---
+- name: Install packages
+  apt:
+    name:
+      - i2c-tools
+      - python-smbus
+  delegate_to: ./part2
+
+- name: Adding i2c modules to modules
+  lineinfile:
+    path: /etc/modules
+    state: present
+    regexp: '^{{ item }}'
+    line: "{{ item }}"
+  with_items:
+    - i2c-bcm2708
+    - i2c-dev
+  delegate_to: ./part2
+
+- name: configuring /boot/config.txt
+  lineinfile:
+    path: ./part1/config.txt
+    line: "{{ item }}"
+    state: present
+  with_items:
+    - dtparam=i2c_arm=on
+    - dtparam=i2c1=on
+
+#- name: Check i2c bus (-y 0 for old models)
+#  raw: 'i2cdetect -y 1'
+#  register: output2
+
+- name: Creating Display development directory
+  file:
+    path: /home/pi/i2c_display
+    state: directory
+  delegate_to: ./part2
+
+- name: Copying development files
+  copy:
+    src: "{{ item }}"
+    dest: "/home/pi/i2c_display/{{ item }}"
+  with_items:
+     - i2c_lib.py 
+     - lcddriver.py
+     - test.py
+  delegate_to: ./part2
+

@@ -4,21 +4,22 @@
     image: "raspbian-stretch-lite.img"
     ap_static_server_ip: "1.1.1.1/24"
   roles:
-    - 00-download-raspbian
+#    - 00-download-raspbian
     - 01-mounting
     - 02-chrooting
-    - 03-initial-prepare
-    - 04-basic-configs
+#    - 03-initial-prepare
+#    - 04-basic-configs
 
-    - 10-develop
-    - 11-usb-gps
+#    - 10-develop
+#    - 11-usb-gps
 #    - 12-dragino
-      
-    - 21-wifi-ap
-    - 22-wifi-routing
+    - 13-i2c-display
+
+#    - 21-wifi-ap
+#    - 22-wifi-routing
 #    - 22-wifi-bridging
 
-    - 97-final-init
+#    - 97-final-init
     - 98-unchrooting 
     - 99-unmounting
 

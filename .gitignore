@@ -9,4 +9,5 @@ temp_fstab
 roles/97-final-init/vars/main.yaml
 part1/
 part2/
+*.pyc
 
