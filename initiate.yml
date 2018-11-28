@@ -13,15 +13,16 @@
 #    - 10-develop
 #    - 11-usb-gps
 #    - 12-dragino
-    - 13-i2c-display
+#    - 13-i2c-display
 
 #    - 21-wifi-ap
 #    - 22-wifi-routing
 #    - 22-wifi-bridging
+    - 23-bluetooth-a2dp
 
 #    - 97-final-init
-    - 98-unchrooting 
-    - 99-unmounting
+#    - 98-unchrooting 
+#    - 99-unmounting
 
 
 
