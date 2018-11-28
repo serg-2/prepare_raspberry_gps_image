@@ -1,0 +1,128 @@
+---
+- name: installing packages
+  apt: 
+    name: 
+      - pulseaudio
+      - pulseaudio-module-bluetooth
+      - pi-bluetooth
+  delegate_to: ./part2
+
+- name: configuring /boot/config.txt
+  lineinfile:
+    path: ./part1/config.txt
+    line: "{{ item }}"
+    state: present
+  with_items:
+    - dtparam=spi=on
+    - dtoverlay=pi3-disable-bt-overlay
+    - core_freq=250
+    - enable_uart=1
+    - force_turbo=1
+
+- name: Adding user to group lp (Printer group)
+  user:
+    name: pi
+    append: yes
+    groups: lp
+  delegate_to: ./part2
+
+- name: Naming bluetooth Device
+  lineinfile:
+    path: /etc/machine-info
+    create: yes
+    mode: 0644
+    owner: root
+    group: root
+    state: present
+    regexp: '^PRETTY_HOSTNAME'
+    line: "PRETTY_HOSTNAME = Kolonka"
+  delegate_to: ./part2
+
+- name: Configuring class of device
+  lineinfile:
+    path: /etc/bluetooth/main.conf
+    state: present
+    regexp: 'Class ='
+    line: "Class = 0x20041C"
+  delegate_to: ./part2
+
+- name: Activating bluetooth page an inquiry scan
+  lineinfile:
+    path: /etc/rc.local
+    state: present
+    regexp: "hciconfig hci0 piscan"
+    line: "hciconfig hci0 piscan"
+    insertbefore: '^exit 0'
+  delegate_to: ./part2
+
+- name: Configuring Pulse
+  lineinfile:
+    path: /etc/pulse/daemon.conf
+    state: present
+    regexp: '^{{ item.split("=")[0] }}='
+    line: "{{ item }}"
+  with_items:
+    - resample-method = ffmpeg
+    - ; resample-method = trivial
+    - enable-remixing = no
+    - enable-lfe-remixing = no
+    - default-sample-format = s32le
+    - default-sample-rate = 192000
+    - alternate-sample-rate = 176000
+    - default-sample-channels = 2
+    - exit-idle-time = -1
+  delegate_to: ./part2
+
+#- name: Enable PulseAudio on startup OLD
+#  lineinfile:
+#    path: /etc/rc.local
+#    regexp: "pulseaudio -D"
+#    state: present
+#    line: "pulseaudio -D"
+#    insertbefore: '^exit 0'
+#  delegate_to: ./part2
+
+- name: Create Daemon file for systemd for PulseAudio
+  copy:
+    src: pulseaudio.service
+    dest: /etc/systemd/system
+    mode: 0644
+  delegate_to: ./part2
+
+- name: Adding PulseAudio Daemon to Auto-start 
+  file:
+    src: "/etc/systemd/system/pulseaudio.service"
+    dest: "/etc/systemd/system/multi-user.target.wants/pulseaudio.service"
+    state: link
+  delegate_to: ./part2
+
+#Default Pulse Audio Settings at
+#/usr/share/alsa/init/default
+#Saved with 'alsactl store' settings:
+#/var/lib/alsa/asound.state
+
+#Pulseaudio should be runned
+#- name: Adjusting Volume
+#  command: {{ item }}
+#  with_items:
+#  - amixer -q set Master 100%
+#  - pactl set-sink-volume 0 100%
+#  delegate_to: ./part2
+
+
+# Air Play
+#- name: Configuring AirPlay
+#  lineinfile:
+#    create: yes
+#    path: /etc/shairport-sync.conf
+#    state: present
+#    regexp: '^{{ item }}'
+#    line: "{{ item }}"
+#  with_items:
+#    - '// General Settings'
+#    - 'general = {'
+#    - '   name = "${NAME}";'
+#    - '   volume_range_db = 40;'
+#    - '};'
+#  delegate_to: ./part2
+
