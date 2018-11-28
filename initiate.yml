@@ -2,9 +2,12 @@
   connection: local
   vars: 
     image: "raspbian-stretch-lite.img"
+    #in Megabytes
+    increase_partition_size: 100
     ap_static_server_ip: "1.1.1.1/24"
   roles:
 #    - 00-download-raspbian
+#    - 00a-increase-partition-size
     - 01-mounting
     - 02-chrooting
 #    - 03-initial-prepare
@@ -21,8 +24,8 @@
     - 23-bluetooth-a2dp
 
 #    - 97-final-init
-#    - 98-unchrooting 
-#    - 99-unmounting
+    - 98-unchrooting 
+    - 99-unmounting
 
 
 

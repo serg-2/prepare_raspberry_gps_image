@@ -1,0 +1,53 @@
+---
+- name: Increasing file size
+  raw: "dd if=/dev/zero bs={{ 1024*1024 }} count={{ increase_partition_size }} >> {{ image }}"
+
+- name: Detecting free space in image
+  raw: "parted {{ image }} unit s print free"
+  register: output2
+  changed_when: false
+
+- name: Prepare Sector Size
+  set_fact: 
+    sector_size: '{{ output2.stdout | regex_findall ("Sector size \(logical/physical\): (?P<size>[0-9]{1,5})") }}'
+
+- name: Detecting end of last partition
+  raw: "parted {{ image }} unit s print free|grep primary|tail -n 1"
+  register: output3
+  changed_when: false
+
+- name: Detecting count of free space
+  raw: "parted {{ image }} unit s print free|grep \"Free Space\"|tail -n 1"
+  register: output4
+  changed_when: false
+
+- name: Prepare Patterns for increase size
+  set_fact:
+    pattern_end_last: "\\s*[0-9]{1}\\s*[0-9]{1,15}s\\s*(?P<size>[0-9]{1,15})s\\s*[0-9]{1,15}s\\s*\\S*\\s*\\S*"
+    pattern_free_count: "\\s*[0-9]{1,15}s\\s*[0-9]{1,15}s\\s*(?P<size>[0-9]{1,15})s\\s*Free Space"
+    pattern_number_last: "\\s*(?P<size>[0-9]{1})\\s*[0-9]{1,15}s\\s*[0-9]{1,15}s\\s*[0-9]{1,15}s\\s*\\S*\\s*\\S*"
+
+- name: Prepare Facts for resizing
+  set_fact:
+    end_last: '{{ output3.stdout | regex_findall (pattern_end_last) }}'   
+    free_count: '{{ output4.stdout | regex_findall (pattern_free_count) }}'
+    number_last: '{{ output3.stdout | regex_findall (pattern_number_last) }}'
+
+- name: Resizing Partition
+  raw: "parted {{ image }} resizepart {{ number_last[0] }} {{ end_last[0]|int +free_count[0]|int }}s"
+
+- name: Assigning image to loop device 9
+  raw: "losetup /dev/loop9 {{ image }}"
+
+- name: Probing Partitions on loop device 9
+  raw: "partprobe /dev/loop9"
+
+- name: Force checking partition on errors
+  shell: "e2fsck -fa /dev/loop9p{{ number_last[0] }}"
+
+- name: Resizing Partition to Maximum size
+  raw: "resize2fs /dev/loop9p{{ number_last[0] }}"
+
+- name: Freeing loop device 9
+  raw: "losetup -d /dev/loop9"
+
