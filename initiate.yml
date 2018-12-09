@@ -12,11 +12,13 @@
 #    - 02-chrooting
 #    - 03-initial-prepare
 #    - 04-basic-configs
+#    - 05-network-config
 
 #    - 10-develop
 #    - 11-usb-gps
 #    - 12-dragino
 #    - 13-i2c-display
+#    - 14-geiger
 
 #    - 21-wifi-ap
 #    - 22-wifi-routing
@@ -24,7 +26,7 @@
 #    - 23-bluetooth-a2dp
 
 #    - 97-final-init
-    - 98-unchrooting 
-    - 99-unmounting
+#    - 98-unchrooting 
+#    - 99-unmounting
 
 

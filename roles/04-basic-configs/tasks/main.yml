@@ -14,4 +14,3 @@
     dest: ./part1/ssh
     force: no
 
-# ADD INTERFACES UP And auto

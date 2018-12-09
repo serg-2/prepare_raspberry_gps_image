@@ -1,0 +1,8 @@
+---
+- name: Copying interfaces file
+  copy:
+    src: interfaces
+    dest: /etc/network/interfaces
+    mode: 0644
+  delegate_to: ./part2
+
