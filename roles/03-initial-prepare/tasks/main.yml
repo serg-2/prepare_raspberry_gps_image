@@ -8,6 +8,17 @@
     owner: root
     group: root
 
+- name: See UUID of partition
+  raw: 'blkid {{ image }}|grep -Po "(?<=PTUUID=\")[0-9a-f]*"'
+  register: output_blkid
+  changed_when: false
+
+- name: changing boot sequence 
+  lineinfile:
+    path: ./part1/cmdline.txt
+    regexp: '.*'
+    line: "dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=PARTUUID={{ output_blkid.stdout }} rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait"
+
 - name: Update cache of apt
   raw: apt-get update
   delegate_to: ./part2

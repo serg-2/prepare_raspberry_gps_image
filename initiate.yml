@@ -8,8 +8,8 @@
   roles:
 #    - 00-download-raspbian
 #    - 00a-increase-partition-size
-    - 01-mounting
-    - 02-chrooting
+#    - 01-mounting
+#    - 02-chrooting
 #    - 03-initial-prepare
 #    - 04-basic-configs
 
@@ -21,11 +21,10 @@
 #    - 21-wifi-ap
 #    - 22-wifi-routing
 #    - 22-wifi-bridging
-    - 23-bluetooth-a2dp
+#    - 23-bluetooth-a2dp
 
 #    - 97-final-init
     - 98-unchrooting 
     - 99-unmounting
-
 
 

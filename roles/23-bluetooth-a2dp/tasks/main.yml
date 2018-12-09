@@ -7,6 +7,11 @@
       - pi-bluetooth
   delegate_to: ./part2
 
+# Check that hci0 is ok. (For integrated hciuart.service )
+# Check that bluetoothd started
+# Pulseaudio start manual
+# TURN OFF interated Wifi if using integrated bluetooth or use dongles
+
 - name: configuring /boot/config.txt
   lineinfile:
     path: ./part1/config.txt
@@ -38,21 +43,18 @@
     line: "PRETTY_HOSTNAME = Kolonka"
   delegate_to: ./part2
 
-- name: Configuring class of device
-  lineinfile:
-    path: /etc/bluetooth/main.conf
-    state: present
-    regexp: 'Class ='
-    line: "Class = 0x20041C"
-  delegate_to: ./part2
-
-- name: Activating bluetooth page an inquiry scan
+- name: Adding configuring bluetooth to auto-start
   lineinfile:
     path: /etc/rc.local
     state: present
-    regexp: "hciconfig hci0 piscan"
-    line: "hciconfig hci0 piscan"
+    regexp: "{{ item }}"
+    line: "{{ item }}"
     insertbefore: '^exit 0'
+  with_items:
+    - ip link set dev wlan0 down
+    - pulseaudio -D
+    - sleep 1
+    - hciconfig hci0 class 0x200420
   delegate_to: ./part2
 
 - name: Configuring Pulse
@@ -71,29 +73,6 @@
     - alternate-sample-rate = 176000
     - default-sample-channels = 2
     - exit-idle-time = -1
-  delegate_to: ./part2
-
-#- name: Enable PulseAudio on startup OLD
-#  lineinfile:
-#    path: /etc/rc.local
-#    regexp: "pulseaudio -D"
-#    state: present
-#    line: "pulseaudio -D"
-#    insertbefore: '^exit 0'
-#  delegate_to: ./part2
-
-- name: Create Daemon file for systemd for PulseAudio
-  copy:
-    src: pulseaudio.service
-    dest: /etc/systemd/system
-    mode: 0644
-  delegate_to: ./part2
-
-- name: Adding PulseAudio Daemon to Auto-start 
-  file:
-    src: "/etc/systemd/system/pulseaudio.service"
-    dest: "/etc/systemd/system/multi-user.target.wants/pulseaudio.service"
-    state: link
   delegate_to: ./part2
 
 #Default Pulse Audio Settings at

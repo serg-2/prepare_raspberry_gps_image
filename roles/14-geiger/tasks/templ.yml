@@ -1,0 +1,19 @@
+apt install
+
+python-pip
+python-dev
+libevent-dev
+
+pip install
+ez-setup
+leveldb greenlet bottle gevent gevent-websocket
+
+==============
+developmnet
+apt install python-smbus
+
+/etc/modules:
+snd-bcm2835
+i2c-dev
+#address 0x19
+#
