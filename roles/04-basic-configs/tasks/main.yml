@@ -14,3 +14,7 @@
     dest: ./part1/ssh
     force: no
 
+- name: Set timezone
+  timezone:
+    name: Europe/Moscow
+
