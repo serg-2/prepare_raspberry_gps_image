@@ -1,0 +1,10 @@
+- name: Enabling camera at boot 
+  lineinfile:
+    path: ./part1/config.txt
+    regexp: '^{{ item.split("=")[0] }}'
+    line: "{{ item }}"
+  with_items:
+    - "start_x=1"
+    - "gpu_mem=128"
+    - "disable_camera_led=1"
+
