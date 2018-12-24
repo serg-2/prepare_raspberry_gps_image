@@ -8,3 +8,27 @@
     - "gpu_mem=128"
     - "disable_camera_led=1"
 
+- name: Adding user pi to video group
+  user:
+    name: pi
+    groups: video
+  delegate_to: ./part2
+
+#- name: Make still image in dark ISO 800, Brightness 80, contrast 100, shutter 10000000 microseconds
+#  raw: "raspistill -ss 10000000 -ISO 800 -br 80 -co 100 -o cam.jpg"
+#  delegate_to: ./part2
+#
+#- name: Make Timelapse.30000 milliseconds All. 2000 milleseconds between photo(0 - minimum. It will be around 30) . %04d - 4-digit name.  
+#  raw: "raspistill -t 30000 -tl 2000 -o image%04d.jpg"
+#  delegate_to: ./part2
+#
+#- name: Make video from stills (need libav-tools) 10 - ten frames per second.
+#  raw: "avconv -r 10 -i image%04d.jpg -r 10 -vcodec libx264 -vf scale=1280:720 timelapse.mp4"
+#  delegate_to: ./part2
+#
+#- name: Alternate video from stills (ls *.jpg > stills.txt, need mencoder)
+#  raw: "mencoder -nosound -ovc lavc -lavcopts vcodec=mpeg4:aspect=16/9:vbitrate=8000000 -vf scale=1920:1080 -o timelapse.avi -mf type=jpeg:fps=24 mf://@stills.txt"
+#
+#- name: Capture video 10000 milliseconds
+#  raw: "raspivid -o video.h264 -t 10000"
+#

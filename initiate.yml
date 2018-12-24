@@ -27,7 +27,7 @@
 #    - 23-bluetooth-a2dp
 
 #    - 97-final-init
-    - 98-unchrooting 
-    - 99-unmounting
+#    - 98-unchrooting 
+#    - 99-unmounting
 
 
