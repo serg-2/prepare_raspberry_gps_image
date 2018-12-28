@@ -2,13 +2,13 @@
 
 a=`/bin/ping -c 2 {{ self_check_host }}|/bin/grep received|/usr/bin/cut -d " " -f 4`
 
-if [ $a == "1" ] || [ $a == "2" ];
+if [[ $a == "1" ]] || [[ $a == "2" ]];
 then
    echo "OK" > /dev/null
 else
    sleep 60
    b=`/bin/ping -c 2 {{ self_check_host }}|/bin/grep received|/usr/bin/cut -d " " -f 4`
-   if [ $b == "1" ] || [ $b == "2" ];
+   if [[ $b == "1" ]] || [[ $b == "2" ]];
    then
      echo "NEARLY OK" > /dev/null
    else
